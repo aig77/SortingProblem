@@ -2,6 +2,12 @@ import java.lang.*;
 
 public class Sort {
 
+    public static void swap(int[] arr, int i, int j) {
+        int temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+    }
+
     static void printArr(int[] arr) {
         for(int i = 0; i < arr.length; i++) {
             if(i > 0 && i % 10 == 0)
@@ -48,18 +54,26 @@ public class Sort {
         return sum/m;
     }
 
+    static void copyArr(int[] thisArr, int[] thatArr) {
+        if(thisArr.length == thatArr.length) {
+            for(int i = 0; i < thatArr.length; ++i) {
+                thisArr[i] = thatArr[i];
+            }
+        }
+    }
+
     public static void main(String[] args) {
 
         // Number of elements that need sorting
-        int n = 10000;
+        int n = 100000;
         // Number of trials
-        int m = 10;
+        int m = 5;
 
         int arrs[][] = buildArrs(n,m);
 
         double t1;
         double t2;
-        double[] times = new double[5];
+        double[] times = new double[m];
         int[] testArr = new int[n];
         
         /* Insertion Sort Trials */
@@ -68,11 +82,11 @@ public class Sort {
             + "--------------------------------------");
 
         for(int i = 0; i < times.length; i++) {
-            testArr = arrs[i];
+            copyArr(testArr, arrs[i]);
             t1 = System.nanoTime()/1000;
             InsertionSort.sort(testArr);
             t2 = System.nanoTime()/1000;
-            printArr(arrs[i]);
+            //printArr(testArr);
             times[i] = t2-t1;
         }
 
@@ -84,21 +98,38 @@ public class Sort {
 
         /* Merge Sort Trials */
 /*-----------------------------------------------------------------------*/
-        System.out.println("\nMerge Sort:\n"
+        System.out.println("\nMerge Sort (standard 2 way):\n"
             + "--------------------------------------");
 
         for(int i = 0; i < times.length; i++) {
-            testArr = arrs[i];
+            copyArr(testArr, arrs[i]);
             t1 = System.nanoTime()/1000;
-            MergeSort.sort(testArr, 0, testArr.length-1);
+            MergeSort.twoWaySort(testArr, 0, testArr.length-1);
             t2 = System.nanoTime()/1000;
-            printArr(arrs[i]);
+            //printArr(testArr);
             times[i] = t2-t1;
         }
 
-        double MStime = averageOfArr(times, m);
-        System.out.println("Average Time: " + MStime + "\n"
+        double MStime1 = averageOfArr(times, m);
+        System.out.println("Average Time: " + MStime1 + "\n"
             + "--------------------------------------\n");
+/*-----------------------------------------------------------------------*/
+        System.out.println("\nMerge Sort (4 way):\n"
+            + "--------------------------------------");
+
+        for(int i = 0; i < times.length; i++) {
+            copyArr(testArr, arrs[i]);
+            t1 = System.nanoTime()/1000;
+            MergeSort.fourWaySort(testArr, 0, testArr.length-1);
+            t2 = System.nanoTime()/1000;
+            //printArr(testArr);
+            times[i] = t2-t1;
+        }
+
+        double MStime2 = averageOfArr(times, m);
+        System.out.println("Average Time: " + MStime2 + "\n"
+            + "--------------------------------------\n");
+/*-----------------------------------------------------------------------*/
 
 
         /* Quick Sort Trials */
@@ -108,11 +139,11 @@ public class Sort {
             + "--------------------------------------");
         
         for(int i = 0; i < times.length; i++) {
-            testArr = arrs[i];
+            copyArr(testArr, arrs[i]);
             t1 = System.nanoTime()/1000;
             QuickSort.lastElementPivot(testArr, 0, testArr.length-1);
             t2 = System.nanoTime()/1000;
-            printArr(arrs[i]);
+            //printArr(testArr);
             times[i] = t2-t1;
         }
 
@@ -125,11 +156,11 @@ public class Sort {
             + "--------------------------------------");
         
         for(int i = 0; i < times.length; i++) {
-            testArr = arrs[i];
+            copyArr(testArr, arrs[i]);
             t1 = System.nanoTime()/1000;
             QuickSort.randomizedPivot(testArr, 0, testArr.length-1);
             t2 = System.nanoTime()/1000;
-            printArr(arrs[i]);
+            //printArr(testArr);
             times[i] = t2-t1;
         }
 
@@ -138,11 +169,30 @@ public class Sort {
             + "--------------------------------------\n");
 /*-----------------------------------------------------------------------*/
 
-        System.out.println("\nOriginal Arrays: "
-        + "--------------------------------------\n");
-        printArrs(arrs);
+        /* Heap Sort */
+/*-----------------------------------------------------------------------*/
+        System.out.println("\nHeap Sort:\n"
+                + "--------------------------------------");
+            
+        for(int i = 0; i < times.length; i++) {
+            copyArr(testArr, arrs[i]);
+            t1 = System.nanoTime()/1000;
+            HeapSort.sort(testArr, testArr.length);
+            t2 = System.nanoTime()/1000;
+            //printArr(testArr);
+            times[i] = t2-t1;
+        }
 
-        System.out.println("\nTaking a look at the sorting problem:\n" 
+        double HStime = averageOfArr(times, m);
+        System.out.println("Average Time: " + HStime + "\n"
+            + "--------------------------------------\n");
+/*-----------------------------------------------------------------------*/
+
+        System.out.println("\nOriginal Arrays: "
+        + "\n--------------------------------------\n");
+        //printArrs(arrs);
+
+        System.out.println("Taking a look at the sorting problem:\n" 
             + "How long does it take to sort n integers\n"
             + "using different sorting methods?\n"
             + "Keep in mind, the proven fastest average sorting\n"
@@ -153,12 +203,17 @@ public class Sort {
             + "(micro seconds) are compared to the other methods.\n"
             + "The original and sorted arrays can be viewed above.\n");
 
-        System.out.println("Average times:\n"
+        System.out.println("Number of elements in array: " + n
+            + "\nNumber of Trials: " + m);
+        
+        System.out.println("\nAverage times:\n"
             + "--------------------------------------\n"
             + "Insertion Sort: " + IStime + "\n"
-            + "Merge Sort: " + MStime + "\n"
+            + "Merge Sort (standard 2 way): " + MStime1 + "\n"
+            + "Merge Sort (4 way): " + MStime2 + "\n"
             + "Quick Sort (last element pivot): " + QStime1 + "\n"
-            + "Quick Sort (randomized pivot): " + QStime2 + "\n");
+            + "Quick Sort (randomized pivot): " + QStime2 + "\n"
+            + "Heap Sort: " + HStime + "\n");
     }
 
 }

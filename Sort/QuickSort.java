@@ -22,10 +22,10 @@ public class QuickSort {
         for(int j = p; j < r; ++j) {
             if(arr[j] <= pivot) {
                 i++;
-                swap(arr, i, j);
+                Sort.swap(arr, i, j);
             }
         }
-        swap(arr, i+1, r);
+        Sort.swap(arr, i+1, r);
         return i+1;
     }
 /*------------------------------------------------------------------------------------*/
@@ -49,16 +49,9 @@ public class QuickSort {
     private static int randomPartition(int[] arr, int p, int r) {
         Random rand = new Random();
         int i = rand.nextInt((r-p)+1) + p;
-        swap(arr, i, r);
+        Sort.swap(arr, i, r);
         return partition(arr, p, r);
     }
 /*------------------------------------------------------------------------------------*/
-
-    // Helper methods
-    private static void swap(int[] arr, int i, int j) {
-        int temp = arr[i];
-        arr[i] = arr[j];
-        arr[j] = temp;
-    }
 
 }
